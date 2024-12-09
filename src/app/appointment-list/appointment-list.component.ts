@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { Appointment } from '../models/appointment';
 
@@ -7,12 +7,17 @@ import { Appointment } from '../models/appointment';
   templateUrl: './appointment-list.component.html',
   styleUrls: ['./appointment-list.component.css']
 })
-export class AppointmentListComponent {
-  
+export class AppointmentListComponent implements OnInit {
   newAppointmentTitle: string = ""
   newAppointmentDate: Date = new Date();
   
   appointments: Appointment[] = []
+
+  ngOnInit(): void {
+    let savedAppointments = localStorage.getItem("appointments");
+
+    this.appointments = savedAppointments ? JSON.parse(savedAppointments) : [];
+  }
 
   addAppointment(){
     if(this.newAppointmentDate && this.newAppointmentTitle.trim().length){
@@ -23,12 +28,15 @@ export class AppointmentListComponent {
       }]
     
       this.newAppointmentDate = new Date();
-      this.newAppointmentTitle = "";   
+      this.newAppointmentTitle = "";
+      
+      localStorage.setItem("appointments",JSON.stringify(this.appointments));
     }
   }
 
   deleteAppointment(id : number){
     this.appointments = [...this.appointments.filter(appointment => appointment.id !== id)];
-  }
-  
+
+    localStorage.setItem("appointments",JSON.stringify(this.appointments));
+  } 
 }
